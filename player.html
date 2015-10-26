@@ -1,0 +1,41 @@
+<head>
+  <title>player</title>
+</head>
+
+<body>
+	{{> ui}}
+	{{> clips}}
+</body>
+
+<template name="clips">
+  <div id="clips">
+    {{#each clips}}
+      {{> clip}}
+      <br/>
+    {{/each}}
+  </div>
+</template>
+
+<template name="clip">
+  <div class="clip">
+    <button class="deleteClip">-</button>
+    <button class="playClip">></button>
+    <audio class="clipAudio">
+      <source src="{{url}}" type="audio/mp3">
+    </audio>
+    {{url}}
+ </div>
+</template>
+
+<template name="ui">
+  
+  <div id="progressContainer">
+    <div id="progressBar" style="width:{{head}};"></div>
+    <div id="progressTimecode">{{timecode}}</div>
+  </div>
+
+  <button id="playPause">>>></button><br/>
+	<input id="newUrl" type="text">
+	<button id="add">+</button>
+  <br/><br/>
+</template>

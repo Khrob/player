@@ -1,0 +1,49 @@
+body 
+{
+	font-family:OpenSans;
+	border:0;
+	margin:0;
+	padding:0;
+	width:100%;
+}
+
+/** CLIPS **/
+
+.clip
+{
+	position: relative;
+	border:1px solid LightGray;
+}
+
+.deleteClip
+{
+	position: absolute;
+	right:2px;
+	top:2px;
+}
+
+/** UI **/
+
+#progressContainer
+{
+	position: relative;
+	border:1px solid LightGray;	
+	width:100%;
+	height:33px;
+}
+
+#progressBar
+{
+	position: absolute;
+	left:0px;
+	background-color:Silver;
+	height:100%;
+	width:10%;
+}
+
+#progressTimecode
+{
+	position: absolute;
+	left: 10px;
+	top:5px;
+}
