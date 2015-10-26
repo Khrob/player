@@ -1,9 +1,14 @@
 Clips = new Mongo.Collection ("Clips")
+Projects = new Mongo.Collection ("Projects")
 
 if (Meteor.isClient) 
 {
-	Tracker.autorun (function () {
-		Meteor.subscribe("clips")
+	State = new Mongo.Collection(null)
+
+	Tracker.autorun (function () 
+	{
+		Meteor.subscribe ("clips")
+		Meteor.subscribe ("projects")
 	})
 
 	Template.clips.helpers
@@ -37,10 +42,16 @@ if (Meteor.isClient)
 	Template.ui.helpers
 	({
 		head : function () {
-			console.log(this)
-			"" + this.head * 100.0 + "%"
+			return "" + Session.get("elapsed") + "%"
 		},
-		timecode : "00:00:00"
+		timecode : function () {
+			var elapsedSeconds = Math.floor(Session.get("elapsed"))
+			var hours   = Math.floor(elapsedSeconds / 3600)
+			var minutes = Math.floor(elapsedSeconds / 60 - hours * 60)
+			var seconds = elapsedSeconds % 60
+			var frames  = Math.floor(Session.get("fps") * (Session.get("elapsed") - elapsedSeconds))
+			return ""+hours+":"+minutes+":"+seconds+":"+frames
+		},
 	})
 
 	Template.ui.events
@@ -49,33 +60,33 @@ if (Meteor.isClient)
 			Meteor.call("createClip", $("#newUrl").val())
 		},
 		'click #playPause' : function () {
-			this.playing = !this.playing
+			Session.set("playing", !Session.get("playing"))
 		}
 	})
 
-	function update (player) 
+	function update () 
 	{
-		if (player.playing == true)
+		if (Session.get("playing") == true)
 		{
-			console.log("tick")
-			player.head += 0.02
+			Session.set("elapsed", Session.get("elapsed") + (1.0 / Session.get("fps")))
+			console.log("blip " + Session.get("elapsed"))
 		}
 	}
 
-	Template.ui.onCreated(function () {
+	Template.ui.onCreated(function () 
+	{
+		Session.set("duration", 100.0)
+		Session.set("fps", 29.97)
+		Session.set("elapsed", 0.0)
+		Session.set("playing", false)
 
-		this.playing 	= false
-		this.head 		= 0.0
-		this.fps 		= 29.97
-		this.duration	= 100.0
-
-		var self = this
-
-		var ticker = Meteor.setInterval (function () 
+		this.autorun (function () 
 		{
-			update(self)
-		}, 1000 * 1.0 / this.fps)
-
+			var ticker = Meteor.setInterval (function () 
+			{
+				update()
+			}, 1000 * 1.0 / Session.get("fps"))
+		})
 	})
 }
 
@@ -90,9 +101,17 @@ if (Meteor.isServer)
 		removeClip : function (_id) {
 			Clips.remove({_id:_id})
 		},
+
+		createProject : function (name) {
+			Projects.insert({name:name})
+		},
 	})
 
 	Meteor.publish ("clips", function () {
 		return Clips.find({})
+	})
+
+	Meteor.publish ("projects", function () {
+		return Projects.find({})
 	})
 }
