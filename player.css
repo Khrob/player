@@ -44,6 +44,12 @@ body
 #progressTimecode
 {
 	position: absolute;
+	left: 50px;
+	top:7px;
+}
+
+#playPause
+{	position: absolute;
 	left: 10px;
-	top:5px;
+	top:8px;
 }
